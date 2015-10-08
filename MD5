@@ -1,11 +1,15 @@
-d42ca807e97e594a9e48193b569f084b *DESCRIPTION
+3367749f681a544fbbf3bc8d1e78fef5 *DESCRIPTION
 666e290a49c9b9baffa6c36b3683f323 *LICENSE
 2c6e240cebd33a3c1c550fd588c48383 *NAMESPACE
-f6b2afb9e03dcaf5d0a883695494b7cb *NEWS
+eb8b784a976d9d863110e31e20557af1 *NEWS
 7dd0cbbbacc1db15a37c749d77519990 *R/internals.R
 bd2fb30659da6b210b6561ba47eb6b54 *R/logging.R
 9830583cd5603fa8db8def0cc7cf14ed *R/luzlogr.R
-27874988af9f99039fa52aea44241694 *README.md
+b0b6cee974abd95980dd38824d5226dc *README.md
+5fbaf1b97240f5c590bc416b6b9f4d66 *build/vignette.rds
+345454b5f6b32e96b4b0f20d188ffae6 *inst/doc/intro-luzlogr.R
+23d63ca464cae9ca8fd806ccd862d8f0 *inst/doc/intro-luzlogr.Rmd
+9d5e2a1a336c3f189097b5c3f1525e02 *inst/doc/intro-luzlogr.html
 ee6334900461f14a6f9511ec119e6819 *man/closelog.Rd
 a38aa414e43edd082ced61131cee1b2e *man/getloginfo.Rd
 bf7137a85f60b7438387687d2021517d *man/luzlogr.Rd
@@ -17,5 +21,5 @@ b6a113cf2100224d18faf67d92735865 *man/openlog.Rd
 d780a48fdafe8602184351e502750992 *man/setlogdata.Rd
 e7ed3adf6d0df85a1afd1c27f5a084f7 *tests/testthat.R
 5373b013327fabb0c17684aefff3b972 *tests/testthat/test_internals.R
-d43a2ec8904a8c80914fe5b560546efa *tests/testthat/test_logging.R
-7c4d8f83fe1247ae82244c0d73500fec *vignettes/Introduction.Rmd
+352ee7d00d65fe4290a3402c34b2ab8b *tests/testthat/test_logging.R
+23d63ca464cae9ca8fd806ccd862d8f0 *vignettes/intro-luzlogr.Rmd

@@ -1,7 +1,7 @@
 Package: luzlogr
 Type: Package
 Title: Lightweight Logging for R Scripts
-Version: 0.1.0
+Version: 0.1.1
 Date: 2015-09-29
 Authors@R: person("Ben", "Bond-Lamberty", email = "bondlamberty@pnnl.gov", role = c("aut", "cre"))
 Maintainer: Ben Bond-Lamberty <bondlamberty@pnnl.gov>
@@ -10,9 +10,10 @@ Imports: assertthat (>= 0.1)
 Depends: R (>= 3.0)
 License: MIT + file LICENSE
 LazyData: TRUE
-Suggests: testthat
+Suggests: testthat, knitr, rmarkdown
+VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2015-10-05 15:27:41 UTC; d3x290
+Packaged: 2015-10-08 08:33:52 UTC; d3x290
 Author: Ben Bond-Lamberty [aut, cre]
 Repository: CRAN
-Date/Publication: 2015-10-05 22:16:15
+Date/Publication: 2015-10-08 13:40:08

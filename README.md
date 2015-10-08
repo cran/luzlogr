@@ -1,16 +1,16 @@
 # luzlogr
-Lightweight logging utilities for R scripts.
+Lightweight logging for R scripts.
 
 [![Travis-CI Build Status](https://travis-ci.org/bpbond/luzlogr.svg?branch=master)](https://travis-ci.org/bpbond/luzlogr)
 
 ## Installing
-To install this package:
+
+**luzlogr** is available from [CRAN](http://cran.r-project.org/web/packages/luzlogr/index.html), and can be installed using `install.packages()`. To install the latest, developmental version from this GitHub repository:
 
 1. Make sure you have `devtools` installed from CRAN and loaded.
 2. `install_github("bpbond/luzlogr")`
 
-Then:
-
+Either way, you can then do:
 ```R
 library(luzlogr)
 help(package = 'luzlogr')
@@ -24,7 +24,7 @@ openlog("test.log")
 printlog("message")
 closelog()
 ```
-The resulting log file `test.log` looks like this:
+The resulting log file `test.log` looks something like this:
 ```
 Thu Sep 17 08:46:59 2015  Opening ./test.log
 Thu Sep 17 08:46:59 2015  message
