@@ -1,5 +1,10 @@
 # Testing code for logging functions
 
+# `file.size()` is not defined on Windows R 3.1.1, which is CRAN's current `oldrel`
+# (r-oldrel-windows-ix86+x86_64). Define a workaround for use below.
+if(!exists("file.size"))
+  file.size <- function(...) file.info(...)$size
+
 context("logging")
 
 test_that("functions handle bad input", {
@@ -20,9 +25,6 @@ test_that("functions handle bad input", {
 })
 
 test_that("openlog handles special cases", {
-  # this test errors on CRAN's r-oldrel-windows-ix86+x86_64
-  if(.Platform$OS.type != "unix") skip("not on unix")
-
   LOGFILE <- openlog("test", sink = FALSE)
   closelog()
 
@@ -47,25 +49,21 @@ test_that("openlog handles special cases", {
   open(test, "w")
   LOGFILE <- openlog(test, sink = FALSE)
   expect_true(isOpen(test))
-  closelog()
-  expect_true(isOpen(test))  # now closed and unavailable
+  close(test)  # this will screw up closelog()!
   expect_true(file.exists(LOGFILE))
   file.remove(LOGFILE)
 
   # Detect sink mismatch correctly
-#  capture.output({
-#     LOGFILE <- openlog("test", sink = TRUE)
-#     sink()
-#     printlog("hi")
-#     expect_warning(closelog())
-#  })
-  file.remove(LOGFILE)
+  #  capture.output({
+  #     LOGFILE <- openlog("test", sink = TRUE)
+  #     sink()
+  #     printlog("hi")
+  #     expect_warning(closelog())
+  #  })
+  #  file.remove(LOGFILE)
 })
 
 test_that("Basic logging works correctly", {
-  # this test errors on CRAN's r-oldrel-windows-ix86+x86_64
-  if(.Platform$OS.type != "unix") skip("not on unix")
-
   # opens correctly?
   LOGFILE <- openlog("test", sink = FALSE)
   expect_is(LOGFILE, "character")
@@ -108,9 +106,6 @@ test_that("logging sinks correctly", {
 })
 
 test_that("closelog works correctly", {
-  # this test errors on CRAN's r-oldrel-windows-ix86+x86_64
-  if(.Platform$OS.type != "unix") skip("not on unix")
-
   # sessionInfo added?
   LOGFILE <- openlog("test", sink = FALSE)
   oldsize <- file.size(LOGFILE)
@@ -136,8 +131,10 @@ test_that("closelog works correctly", {
 })
 
 test_that("Priority levels work correctly", {
-  # this test errors on CRAN's r-oldrel-windows-ix86+x86_64
-  if(.Platform$OS.type != "unix") skip("not on unix")
+
+  # file.size() is unreliable on Windows until file is closed
+  # (or maybe it's file.info(); see top of file)
+  skip_on_os("windows")
 
   LOGFILE <- openlog("test", loglevel = 0, sink = FALSE)
 
@@ -153,4 +150,40 @@ test_that("Priority levels work correctly", {
 
   closelog()
   file.remove(LOGFILE)
+})
+
+test_that("Directory change OK", {
+
+  # file.size() is unreliable on Windows until file is closed
+  # (or maybe it's file.info(); see top of file)
+  skip_on_os("windows")
+
+  LOGFILE <- openlog("test", sink = FALSE)
+
+  printlog("Line 1")
+  size0 <- file.size(LOGFILE)
+  olddir <- getwd()
+  setwd(tempdir())
+  printlog("Line 2")
+  size1 <- file.size(LOGFILE)
+  expect_more_than(size1, size0)
+  setwd(olddir)
+  printlog("Line 3")
+  expect_more_than(file.size(LOGFILE), size1)
+
+  closelog()
+  file.remove(LOGFILE)
+})
+
+test_that("all log files closed on error", {
+  skip("don't know how to test this, because testthat traps errors!")
+
+  detach("package:luzlogr", unload=TRUE)
+  options(luzlogr.close_on_error = TRUE)
+  library(luzlogr)
+
+  nl <- nlogs()
+  openlog("test", sink = FALSE)
+  expect_error(stop())
+  expect_equal(nlogs(), nl)
 })

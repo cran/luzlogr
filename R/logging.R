@@ -31,14 +31,11 @@ openlog <- function(file, loglevel = -Inf, append = FALSE, sink = FALSE) {
   assert_that(is.logical(append))
   assert_that(is.logical(sink))
 
-  if(is.character(file)) {  # character filename
-    description <- file
-    closeit <- FALSE
-    if(file.exists(file) & !append) {
-      msg("Removing old ", file)
-      file.remove(file)
-    }
-  } else if(inherits(file, "connection")) {  # connection
+  if(is.character(file)) {
+    file <- file(file)  # THAT'S confusing! Change text filename to connection
+  }
+
+  if(inherits(file, "connection")) {  # connection
     closeit <- !isOpen(file)
     if(!isOpen(file)) {
       msg("Opening connection")
@@ -58,7 +55,7 @@ openlog <- function(file, loglevel = -Inf, append = FALSE, sink = FALSE) {
          description = description, closeit = closeit)
 
   printlog("Opening", description, level = Inf)
-  invisible(description)
+  invisible(normalizePath(description))
 } # openlog
 
 # -----------------------------------------------------------------------------
@@ -69,6 +66,7 @@ openlog <- function(file, loglevel = -Inf, append = FALSE, sink = FALSE) {
 #' @param ts Print preceding timestamp? (logical, optional)
 #' @param cr Print trailing newline? (logical, optional)
 #' @param flag Flag this message (e.g. error or warning) (logical, optional)
+#' @param flush Immediately flush output to file (logical, optional)
 #' @return Invisible success (TRUE) or failure (FALSE).
 #' @details Logs a message, which consists of zero or more printable objects.
 #' Simple objects (numeric and character) are printed together on a single
@@ -99,18 +97,22 @@ openlog <- function(file, loglevel = -Inf, append = FALSE, sink = FALSE) {
 #' readLines(logfile)
 #' @export
 #' @seealso \code{\link{openlog}} \code{\link{closelog}}
-printlog <- function(..., level = 0, ts = TRUE, cr = TRUE, flag = FALSE) {
+printlog <- function(..., level = 0, ts = TRUE, cr = TRUE, flag = FALSE, flush = FALSE) {
 
   # Sanity checks
   assert_that(is.numeric(level))
   assert_that(is.logical(ts))
   assert_that(is.logical(cr))
+  assert_that(is.logical(flag))
+  assert_that(is.logical(flush))
 
   args <- list(...)
 
   # Make sure there's an open log file available
   loginfo <- getloginfo()
-  if(is.null(loginfo)) return(invisible(FALSE))
+  if(is.null(loginfo)) {
+    return(invisible(FALSE))
+  }
 
   msg("Writing to ", loginfo$description)
 
@@ -158,6 +160,10 @@ printlog <- function(..., level = 0, ts = TRUE, cr = TRUE, flag = FALSE) {
     }
 
     if(cr) cat("\n", file = file, append = TRUE)
+
+    if(flush) {
+      flush(file)   # force output to logfile
+    }
   } else {
     msg("Message level not high enough")
   }
@@ -176,7 +182,9 @@ flaglog <- function(...) printlog(..., flag = TRUE)
 #' @param sessionInfo Append \code{\link{sessionInfo}} output? (logical, optional)
 #' @return Number of flagged messages (numeric).
 #' @details Close current logfile. The number of flagged messages is returned,
-#' invisibly.
+#' invisibly. Note that if \code{options(luzlogr.close_on_error = TRUE)} is set, then
+#' if an error occurs, all log files will be automatically closed. This behavior
+#' is not currently enabled by default.
 #'
 #' Logs are stored on a stack, and so when one is closed, logging
 #' output returns to the previous log (if any).
@@ -198,9 +206,6 @@ closelog <- function(sessionInfo = TRUE) {
   loginfo <- getloginfo()
   if(is.null(loginfo)) return(invisible(NULL))
 
-  if(is.character(loginfo$logfile))
-    description <- basename(loginfo$logfile)
-  else
     description <- summary(loginfo$logfile)$description
 
   printlog("Closing", description, "flags =", loginfo$flags, level = Inf)
@@ -215,7 +220,9 @@ closelog <- function(sessionInfo = TRUE) {
   }
 
   # Close file or connection, if necessary
-  if(loginfo$closeit) close(loginfo$logfile)
+  if(loginfo$closeit) {
+    close(loginfo$logfile)
+  }
 
   # Remove log from internal data structure
   removelog()

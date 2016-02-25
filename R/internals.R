@@ -24,13 +24,13 @@ LOGINFO <- ".loginfo"   # name of storage variable
 newlog <- function(logfile, loglevel, sink, description, closeit) {
 
   # Sanity checks
-  assert_that(is.character(logfile) | inherits(logfile, "connection"))
+  assert_that(inherits(logfile, "connection"))
   assert_that(is.numeric(loglevel))
   assert_that(is.logical(sink))
   assert_that(is.character(description))
   assert_that(is.logical(closeit))
 
-  # If log data structure doesn't exist, dreate a (hidden) variable
+  # If log data structure doesn't exist, create a (hidden) variable
   # in the package environment to store it
   if(!exists(LOGINFO, envir = PKG.ENV)) {
     msg("Creating empty log data structure")
@@ -45,6 +45,9 @@ newlog <- function(logfile, loglevel, sink, description, closeit) {
                      closeit = closeit,
                      sink.number = sink.number(),
                      flags = 0)
+
+  # Does this connection already exist?
+  # TODO
 
   loginfo <- get(LOGINFO, envir = PKG.ENV)
   loginfo[[length(loginfo) + 1]] <- newloginfo
