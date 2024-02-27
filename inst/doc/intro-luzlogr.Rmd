@@ -12,7 +12,8 @@ vignette: >
 This vignette describes how to use the **luzlogr** package, which provides flexible but lightweight logging facilities for R scripts.
 
 ## Installing
-To install this package, use R's `install.packages()` function, or the "Packages" pane in [RStudio](https://www.rstudio.com/products/RStudio/). To install the latest, developmental version of this package from GitHub:
+To install this package, use R's `install.packages()` function or the "Packages"
+pane in RStudio. To install the latest, developmental version of this package from GitHub:
 
 1. Make sure you have the `devtools` package installed from CRAN and loaded.
 2. `install_github("bpbond/luzlogr")`
@@ -108,6 +109,14 @@ for(i in seq_along(lg)) cat(lg[i], "\n")
 ### Capturing all output
 
 So far, only messages sent via `printlog()` appear in the log. We might, however, want to capture *everything*^[Almost. Messages, warnings, and errors will not appear; but see `?sink` and its `type = "message"` parameter.] produced by a script. To do this, use the `sink = TRUE` option of `openlog()`.
+
+### Errors and logs
+
+If an error occurs in your script, any log files will by default remain open. If using a single log file, it's easy to put a statement such as `suppressWarnings(closelog())` at the start of your script. Alternatively, you can tell **luzlogr** to close all open logs if an error occurs:
+
+```{r, eval=FALSE}
+options(luzlogr.close_on_error = TRUE)
+```
 
 ### Logging to a connection
 
